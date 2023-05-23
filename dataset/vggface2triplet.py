@@ -14,7 +14,7 @@ class VGGFaces2(data.Dataset):
     mean_bgr = np.array([91.4953, 103.8827, 131.0912])  # from resnet50_ft.prototxt
 
     def __init__(self, root, image_list_file, id_label_dict, split='train', transform=True,
-                 horizontal_flip=False, upper=None):
+                 horizontal_flip=True, upper=None):
         """
         :param root: dataset directory
         :param image_list_file: contains image file names under root
@@ -36,6 +36,9 @@ class VGGFaces2(data.Dataset):
         self.img_info = []
         with open(self.image_list_file, 'r') as f:
             for i, img_file in enumerate(f):
+                if not os.path.isfile(self.root + img_file.strip()):
+                #    print('not found', self.root + img_file)
+                    continue
                 img_file = img_file.strip()  # e.g. n004332/0317_01.jpg
                 class_id = img_file.split("/")[0]  # like n004332
                 label = self.id_label_dict[class_id]
@@ -44,16 +47,16 @@ class VGGFaces2(data.Dataset):
                     'img': img_file,
                     'lbl': label,
                 })
-                if i % 1000 == 0:
+                if i % 500000 == 0:
                     print("processing: {} images for {}".format(i, self.split))
                 if upper and i == upper - 1:  # for debug purpose
                     break
 
     def get_img(self, img_file):
         img = PIL.Image.open(os.path.join(self.root, img_file))
-        img = torchvision.transforms.Resize(256)(img)
+        img = torchvision.transforms.Resize((224, 224))(img)
         if self.split == 'train':
-            img = torchvision.transforms.RandomCrop(224)(img)
+            #img = torchvision.transforms.RandomCrop(224)(img)
             img = torchvision.transforms.RandomGrayscale(p=0.2)(img)
         else:
             img = torchvision.transforms.CenterCrop(224)(img)

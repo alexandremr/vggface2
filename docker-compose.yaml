@@ -1,0 +1,21 @@
+version: '3'
+services:
+  pytorchtrain:
+    build:
+      context: .
+      dockerfile:  Dockerfile
+    container_name: pytorchtrain
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /home/zions/Documents/facial/VGG-Face2-crop:/dataset/VGG-Face2-crop
+        #ipc: host
+    shm_size: 40gb
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
+

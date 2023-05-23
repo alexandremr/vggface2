@@ -1,9 +1,6 @@
 import torch
-import torch.nn as nn
-import models.resnet as ResNet
 import models.senet as SENet
-import utils
-import torch.backends.cudnn as cudnn
+from src import utils
 import numpy as np
 import time
 import torchvision
@@ -12,7 +9,7 @@ from PIL import Image
 import torch.nn.functional as F
 import cv2
 
-from models.vggface2 import VGGFaces2
+from dataset.vggface2 import VGGFaces2
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -46,9 +43,9 @@ def get_id_label_map(meta_file):
     return id_label_dict
 
 
-val_dir = '../../estudo/data/test'
-val_list_file = '../../estudo/data/test_list.txt'
-val_meta = '../../estudo/data/meta/identity_meta.csv'
+val_dir = '../data/VGG-Face2/data/test'
+val_list_file = '../data/VGG-Face2/data/test_list.txt'
+val_meta = '../data/VGG-Face2/meta/identity_meta.csv'
 val_id_meta = get_id_label_map(val_meta)
 validation = VGGFaces2(val_dir, val_list_file, val_id_meta, split='valid')
 
@@ -111,9 +108,9 @@ im3 = transform(im3)
 
 
 t = time.time()
-pred1 = net(im1.unsqueeze(0)).squeeze()
-pred2 = net(im2.unsqueeze(0)).squeeze()
-pred3 = net(im3.unsqueeze(0)).squeeze()
+pred1 = net(im1.unsqueeze(0))
+pred2 = net(im2.unsqueeze(0))
+pred3 = net(im3.unsqueeze(0))
 print('total time: {} ms'.format(round(1000 * (time.time() - t), 2)))
 
 
@@ -125,14 +122,14 @@ print('\nEmbedding size:', pred1.size()[0])
 # p3 = F.softmax(net(im3.unsqueeze(0)), dim=1)
 # bp3 = torch.argmax(p3, dim=1)
 #
-# pred1 = F.normalize(pred1, dim=0)
-# pred2 = F.normalize(pred2, dim=0)
-# pred3 = F.normalize(pred3, dim=0)
+# pred1 = F.normalize(pred1, dim=1)
+# pred2 = F.normalize(pred2, dim=1)
+# pred3 = F.normalize(pred3, dim=1)
 
 
-cosine_distance12 = (F.cosine_similarity(pred1, pred2, dim=0) + 1)/2
-cosine_distance13 = (F.cosine_similarity(pred1, pred3, dim=0) + 1)/2
-cosine_distance23 = (F.cosine_similarity(pred2, pred3, dim=0) + 1)/2
+cosine_distance12 = (F.cosine_similarity(pred1, pred2, dim=1))# + 1)/2
+cosine_distance13 = (F.cosine_similarity(pred1, pred3, dim=1))# + 1)/2
+cosine_distance23 = (F.cosine_similarity(pred2, pred3, dim=1))# + 1)/2
 
 print('Distance 1-2:', cosine_distance12)
 print('Distance 1-3:', cosine_distance13)
