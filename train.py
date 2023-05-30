@@ -68,7 +68,7 @@ net.cuda()
 
 
 print('##### margin: 0.6 #####')
-criterion = nn.TripletMarginWithDistanceLoss(distance_function=CosineDistance(), margin=0.6)
+criterion = nn.TripletMarginWithDistanceLoss(distance_function=CosineDistance(), margin=0.7)
 criterion = criterion.cuda()
 
 optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=5e-4)

@@ -174,8 +174,8 @@ class SENet(nn.Module):
 
         x = self.avgpool(x)
 
-        # x = x.view(x.size(0), -1)
-        # x = self.ld(x)
+        x = x.view(x.size(0), -1)
+        x = self.ld(x)
 
         if not self.include_top:
             # return F.max_pool1d(x.view(x.size(0), -1), kernel_size=2, stride=2)

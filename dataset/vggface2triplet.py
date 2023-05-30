@@ -58,10 +58,14 @@ class VGGFaces2(data.Dataset):
         if self.split == 'train':
             #img = torchvision.transforms.RandomCrop(224)(img)
             img = torchvision.transforms.RandomGrayscale(p=0.2)(img)
+            img = torchvision.transforms.RandomHorizontalFlip(p=0.5)(img)
+            img = torchvision.transforms.ColorJitter(brightness=0.15, contrast=0.15, saturation=0.15, hue=0.075)(img)
+            img = torchvision.transforms.GaussianBlur(kernel_size=11, sigma=(0.01, 1.15))(img)
+            img = torchvision.transforms.RandomRotation(degrees=10)(img)
         else:
             img = torchvision.transforms.CenterCrop(224)(img)
-        if self.horizontal_flip:
-            img = torchvision.transforms.functional.hflip(img)
+        #if self.horizontal_flip:
+        #    img = torchvision.transforms.functional.hflip(img)
 
         img = np.array(img, dtype=np.uint8)
         assert len(img.shape) == 3  # assumes color images and no alpha channel
